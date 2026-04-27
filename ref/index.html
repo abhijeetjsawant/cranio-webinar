@@ -1328,7 +1328,7 @@
       display: flex;
       flex-direction: column;
       width: 100%;
-      height: 100%;
+      height: 120dvh;
     }
     /* Text block shrinks to its content — no more space-between void */
     .cover-left {
@@ -1358,11 +1358,13 @@
     }
     .cover-meta .label { font-size: 9px; margin-bottom: 4px; }
     .cover-meta .value { font-size: 13px; }
-    /* Cover image — full square visible, centred, smaller than screen */
+    /* Cover image — section fills remaining space, image centred within */
     .cover-right {
-      flex: 0 0 auto;
-      padding: 14px 0 18px;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 16px 0 24px;
       display: flex;
+      align-items: center;
       justify-content: center;
     }
     .cover-image-frame {
@@ -2058,7 +2060,7 @@
 
       <div class="meaning-block">
         <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
-        <p>Takaraivoluu kantaa muistoja — se on ikään kuin <strong>muistojen vartija</strong>, erityisesti kehollisten ja tunnemuistojen. Stressi kiristää usein takaraivoluun alueen kalvostoa.</p>
+        <p>Stressi kiristää usein takaraivoluun alueen kalvostoa.</p>
       </div>
 
       <div class="meaning-block">
