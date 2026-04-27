@@ -1,0 +1,2724 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kraniosakraaliterapia — Webinaari (v5)</title>
+<meta name="theme-color" content="#ECE2D0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #ECE2D0;
+    --bg-deep: #E2D6BF;
+    --bg-soft: #F2EAD9;
+    --ink: #1A1410;
+    --ink-soft: #4A3F32;
+    --ink-faint: #877B69;
+    --rust: #A4583E;
+    --rust-deep: #7A3F2B;
+    --sage: #6E7A5C;
+    --gold: #A8854B;
+    --bone: #F8F1DF;
+    --line: rgba(26, 20, 16, 0.18);
+    --line-soft: rgba(26, 20, 16, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(120, 90, 60, 0.04) 0%, transparent 60%),
+      radial-gradient(circle at 80% 70%, rgba(120, 90, 60, 0.04) 0%, transparent 60%);
+    mix-blend-mode: multiply;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1001;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  .stage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .deck {
+    position: relative;
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    transform-origin: center center;
+    flex-shrink: 0;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 64px 96px 80px;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  /* ========== CHROME (header / footer) ========== */
+
+  .chrome-top {
+    position: absolute;
+    top: 28px;
+    left: 96px;
+    right: 96px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .chrome-top .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .chrome-top .brand .mark {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--ink-faint);
+    position: relative;
+    animation: breathe 6s ease-in-out infinite;
+  }
+
+  .chrome-top .brand .mark::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: var(--rust);
+    opacity: 0.7;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.85; }
+  }
+
+  .chrome-top .section-tag {
+    display: flex;
+    gap: 28px;
+  }
+
+  .chrome-top .section-tag span {
+    opacity: 0.4;
+    transition: opacity 0.4s ease;
+  }
+
+  .chrome-top .section-tag span.current {
+    opacity: 1;
+    color: var(--rust);
+  }
+
+  body.on-cover .chrome-top .section-tag {
+    visibility: hidden;
+  }
+
+  .chrome-bottom {
+    position: absolute;
+    bottom: 28px;
+    left: 96px;
+    right: 96px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+  }
+
+  .chrome-bottom .counter {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .chrome-bottom .counter .current-num {
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .chrome-bottom .progress {
+    flex: 1;
+    margin: 0 40px;
+    height: 1px;
+    background: var(--line-soft);
+    position: relative;
+  }
+
+  .chrome-bottom .progress .fill {
+    position: absolute;
+    left: 0; top: 0; height: 100%;
+    background: var(--ink);
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  .chrome-bottom .nav-hint {
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.6;
+  }
+
+  .chrome-bottom .fs-btn {
+    margin-left: 18px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .chrome-bottom .fs-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.4;
+  }
+
+  .chrome-bottom .fs-btn:hover {
+    color: var(--ink);
+    border-color: var(--ink-soft);
+  }
+
+  /* ========== SLIDE: COVER ========== */
+
+  .slide.cover {
+    padding: 0;
+    display: none;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .slide.cover.active { display: flex; }
+
+  .cover-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    width: 100%;
+    height: 100%;
+  }
+
+  .cover-left {
+    padding: 120px 72px 72px 96px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg);
+    border-right: 1px solid var(--line);
+  }
+
+  .cover-eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .cover-eyebrow .line {
+    width: 60px; height: 1px;
+    background: var(--rust);
+  }
+
+  .cover-title {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144, "SOFT" 70;
+    font-weight: 400;
+    font-size: 104px;
+    line-height: 0.96;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .cover-title em {
+    font-style: italic;
+    color: var(--rust);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 300;
+  }
+
+  .cover-subtitle {
+    margin-top: 36px;
+    font-family: "Spectral", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 480px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 56px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .cover-meta .label {
+    display: block;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+
+  .cover-meta .value {
+    color: var(--ink);
+    font-family: "Fraunces", serif;
+    font-size: 16px;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .cover-right {
+    background: var(--bg-deep);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cover-image-placeholder {
+    width: 75%;
+    height: 80%;
+    border: 1.5px dashed var(--ink-faint);
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+    color: var(--ink-soft);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    line-height: 1.7;
+  }
+
+  .cover-decoration {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  /* ========== TYPOGRAPHY (general) ========== */
+
+  .slide-eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .slide-eyebrow .line {
+    width: 40px; height: 1px;
+    background: var(--rust);
+  }
+
+  h1.slide-title {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    font-weight: 400;
+    font-size: 68px;
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+
+  h1.slide-title em {
+    font-style: italic;
+    color: var(--rust);
+    font-weight: 300;
+  }
+
+  h2.slide-subtitle {
+    font-family: "Spectral", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: var(--ink-soft);
+    margin-bottom: 48px;
+    max-width: 720px;
+  }
+
+  p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+
+  p strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ========== SECTION DIVIDER ========== */
+
+  .slide.divider {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--bg);
+  }
+
+  .divider-mark {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    color: var(--rust);
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .divider-mark .line {
+    width: 60px; height: 1px;
+    background: var(--rust);
+  }
+
+  .divider-title {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 300;
+    font-size: 144px;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    max-width: 1200px;
+  }
+
+  .divider-title em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .divider-meta {
+    margin-top: 48px;
+    font-family: "Spectral", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 24px;
+    color: var(--ink-soft);
+    max-width: 600px;
+  }
+
+  .divider-duration {
+    margin-top: 28px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  /* ========== STRUCTURE SLIDE ========== */
+
+  .structure-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    margin-top: 56px;
+    align-items: start;
+  }
+
+  .structure-item {
+    border-top: 1px solid var(--ink);
+    padding-top: 28px;
+    position: relative;
+  }
+
+  .structure-item .num {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 20px;
+    color: var(--rust);
+    position: absolute;
+    top: -32px;
+    left: 0;
+  }
+
+  .structure-item .duration {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+
+  .structure-item h3 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 90, "SOFT" 60;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+
+  .structure-item p {
+    font-size: 16px;
+    color: var(--ink-soft);
+  }
+
+  /* ========== TWO COLUMN BONE LAYOUT ========== */
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 80px;
+    flex: 1;
+    align-items: stretch;
+    margin-top: 8px;
+  }
+
+  .col-image {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  .image-placeholder {
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    border: 1.5px dashed var(--ink-faint);
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px;
+    color: var(--ink-soft);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .image-placeholder.wide {
+    flex: none;
+    aspect-ratio: 5 / 3;
+    max-height: 240px;
+  }
+
+  .image-placeholder.square {
+    flex: 1 1 0;
+    aspect-ratio: auto;
+    max-height: 100%;
+  }
+
+  .image-placeholder::before {
+    content: "[ KUVA ]";
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--rust);
+    opacity: 0.7;
+  }
+
+  .image-caption {
+    margin-top: 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .col-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .latin-name {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 300;
+    font-size: 72px;
+    line-height: 0.95;
+    color: var(--rust);
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+
+  .finnish-name {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 60, "SOFT" 50;
+    font-weight: 400;
+    font-size: 26px;
+    color: var(--ink);
+    margin-bottom: 32px;
+    letter-spacing: -0.01em;
+  }
+
+  .finnish-name::before {
+    content: "—  ";
+    color: var(--ink-faint);
+  }
+
+  .meaning-block {
+    border-top: 1px solid var(--line);
+    padding: 22px 0 4px;
+    margin-bottom: 4px;
+  }
+
+  .meaning-block:last-of-type {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 22px;
+  }
+
+  .meaning-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .meaning-label .num {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14px;
+    letter-spacing: 0;
+    color: var(--rust);
+  }
+
+  .meaning-block p {
+    font-size: 16.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 0;
+  }
+
+  /* ========== INTRO / CONCEPT SLIDES ========== */
+
+  .concept-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    flex: 1;
+    align-items: stretch;
+    margin-top: 24px;
+  }
+
+  /* Vertically center text-side content inside the concept-layout grid track
+     (the image-side respects aspect-ratio because of stretch) */
+  .concept-layout .concept-text {
+    align-self: center;
+  }
+  .concept-layout .col-image {
+    justify-content: center;
+  }
+
+  .concept-text {
+    max-width: 540px;
+  }
+
+  .concept-text p {
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 22px;
+  }
+
+  .concept-text .lead {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 60, "SOFT" 60;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 32px;
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 56px;
+    margin-bottom: 40px;
+  }
+
+  .stat {
+    border-top: 1px solid var(--ink);
+    padding-top: 14px;
+  }
+
+  .stat .num {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144, "SOFT" 80;
+    font-weight: 300;
+    font-size: 72px;
+    line-height: 1;
+    color: var(--rust);
+    letter-spacing: -0.03em;
+  }
+
+  .stat .num em {
+    font-style: italic;
+    font-size: 32px;
+    color: var(--ink);
+    margin-left: 4px;
+  }
+
+  .stat .label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 8px;
+  }
+
+  /* ========== TWO-PART LIST (neuro/visc) ========== */
+
+  .duo-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 24px;
+  }
+
+  .duo-card {
+    border: 1px solid var(--line);
+    padding: 36px 32px;
+    background: rgba(255,255,255,0.18);
+    position: relative;
+  }
+
+  .duo-card .latin {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 300;
+    font-size: 38px;
+    color: var(--rust);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .duo-card .finnish {
+    font-family: "Fraunces", serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+
+  .duo-card .count {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  .duo-card p {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 0;
+  }
+
+  /* ========== FLEXION / EXTENSION SLIDE ========== */
+
+  .flex-ext-trio {
+    display: grid;
+    grid-template-columns: 1fr 1.45fr 1fr;
+    gap: 56px;
+    flex: 1;
+    align-items: stretch;
+    margin-top: 8px;
+    min-height: 0;
+  }
+
+  .flex-ext-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .flex-ext-state .state-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .flex-ext-state .state-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--rust);
+    flex-shrink: 0;
+  }
+
+  .flex-ext-state .state-header h3 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 144, "SOFT" 80;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .flex-ext-state ul {
+    list-style: none;
+  }
+
+  .flex-ext-state ul li {
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    padding-left: 22px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .flex-ext-state ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 10px;
+    height: 1px;
+    background: var(--rust);
+  }
+
+  .flex-ext-state ul li strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Right column mirrors — exhale flows outward */
+  .flex-ext-state.is-exhale {
+    text-align: right;
+  }
+
+  .flex-ext-state.is-exhale .state-header {
+    flex-direction: row-reverse;
+  }
+
+  .flex-ext-state.is-exhale ul li {
+    padding-left: 0;
+    padding-right: 22px;
+  }
+
+  .flex-ext-state.is-exhale ul li::before {
+    left: auto;
+    right: 0;
+  }
+
+  .flex-ext-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* Subtle horizontal cues — the breath crossing the page */
+  .flex-ext-image::before,
+  .flex-ext-image::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 28px;
+    height: 1px;
+    background: var(--rust);
+    opacity: 0.55;
+  }
+
+  .flex-ext-image::before { left: -42px; }
+  .flex-ext-image::after  { right: -42px; }
+
+  .flex-ext-image .image-frame {
+    height: 100%;
+  }
+
+  /* Slow ambient breath cycle on the central image */
+  @keyframes cranial-breath {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.018); }
+  }
+
+  .flex-ext-image .image-frame img {
+    animation: cranial-breath 8s ease-in-out infinite;
+    transform-origin: center center;
+  }
+
+  /* ========== SBS SLIDE (special) ========== */
+
+  .sbs-layout {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 72px;
+    flex: 1;
+    align-items: stretch;
+    margin-top: 16px;
+  }
+
+  .sbs-layout .col-image {
+    justify-content: center;
+  }
+  .sbs-layout .sbs-list {
+    align-self: center;
+  }
+
+  .sbs-list {
+    list-style: none;
+    counter-reset: sbsItem;
+  }
+
+  .sbs-list li {
+    counter-increment: sbsItem;
+    border-top: 1px solid var(--line);
+    padding: 18px 0 18px 56px;
+    position: relative;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .sbs-list li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sbs-list li::before {
+    content: counter(sbsItem, decimal-leading-zero);
+    position: absolute;
+    left: 0; top: 18px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--rust);
+  }
+
+  /* ========== EXERCISE / QUOTE BLOCK ========== */
+
+  .pull-quote {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-weight: 300;
+    font-size: 30px;
+    line-height: 1.35;
+    color: var(--ink);
+    border-left: 2px solid var(--rust);
+    padding: 8px 0 8px 36px;
+    margin: 28px 0;
+    max-width: 720px;
+  }
+
+  .exercise-card {
+    background: var(--bone);
+    border: 1px solid var(--line);
+    padding: 40px 48px;
+    margin-top: 32px;
+    position: relative;
+  }
+
+  .exercise-card .tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 14px;
+  }
+
+  .exercise-card h3 {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    font-size: 32px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .exercise-card p {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 0;
+  }
+
+  /* ========== CLOSING SLIDE ========== */
+
+  .closing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    flex: 1;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .closing-item {
+    border-top: 1px solid var(--ink);
+    padding-top: 24px;
+  }
+
+  .closing-item .num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    color: var(--rust);
+    margin-bottom: 14px;
+  }
+
+  .closing-item h3 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 90, "SOFT" 60;
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .closing-item p {
+    font-size: 17px;
+    color: var(--ink-soft);
+  }
+
+  /* ========== HELP OVERLAY ========== */
+
+  .help-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 20, 16, 0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    color: var(--bg);
+  }
+
+  .help-overlay.active {
+    display: flex;
+  }
+
+  .help-content {
+    text-align: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    line-height: 2.4;
+    text-transform: uppercase;
+  }
+
+  .help-content kbd {
+    background: var(--rust);
+    padding: 4px 10px;
+    border-radius: 2px;
+    margin: 0 6px;
+    font-family: inherit;
+    font-size: 12px;
+  }
+
+  /* ========== IMAGE FRAMES (real artwork) ========== */
+
+  .image-frame {
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    border: 1.5px dashed var(--ink-faint);
+    background: rgba(255, 255, 255, 0.25);
+    box-sizing: border-box;
+    filter: sepia(0.06) saturate(0.92) contrast(1.02);
+  }
+
+  .cover-image-frame {
+    width: 75%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover-image-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    border: 1.5px dashed var(--ink-faint);
+    background: rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+    filter: sepia(0.08) saturate(0.9) contrast(1.02);
+  }
+
+  /* ========== VIEW TOGGLE (compare two views in the same frame) ========== */
+
+  .view-toggle-frame .view-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    opacity: 0;
+    transition: opacity 0.65s ease;
+    pointer-events: none;
+  }
+
+  .view-toggle-frame .view-image.is-active {
+    opacity: 1;
+  }
+
+  .view-toggle {
+    display: flex;
+    margin-top: 14px;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .view-toggle-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 12px 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: left;
+    position: relative;
+    transition: color 0.4s ease;
+  }
+
+  .view-toggle-btn + .view-toggle-btn {
+    padding-left: 18px;
+    border-left: 1px solid var(--line-soft);
+  }
+
+  .view-toggle-btn .num {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14px;
+    letter-spacing: 0;
+    color: var(--ink-faint);
+    transition: color 0.4s ease;
+  }
+
+  .view-toggle-btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 0;
+    height: 1px;
+    background: var(--rust);
+    transition: width 0.55s cubic-bezier(0.5, 0, 0, 1);
+  }
+
+  .view-toggle-btn:hover { color: var(--ink); }
+  .view-toggle-btn:hover .num { color: var(--ink); }
+
+  .view-toggle-btn.is-active { color: var(--rust); }
+  .view-toggle-btn.is-active .num { color: var(--rust); }
+  .view-toggle-btn.is-active::before { width: 100%; }
+
+  /* Slide-canvas is fixed at 1600x900 — scaled to fit viewport via JS */
+
+  /* ========== MOBILE / TOUCH (≤ 900px) ==========
+     One slide = one viewport. No scroll. Each slide is a fixed
+     full-height card; content distributes through flex with capped
+     image heights and clamped, fluid typography. The aesthetic
+     stays exactly the same — only sizing changes. */
+
+  @media (max-width: 900px) {
+    html, body {
+      overflow: hidden;
+      height: 100%;
+      height: 100dvh;
+      width: 100%;
+      position: fixed;
+      inset: 0;
+    }
+
+    .stage {
+      position: fixed;
+      inset: 0;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      display: block;
+    }
+
+    .deck {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      transform: none !important;
+      transform-origin: 0 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      padding: 52px 20px 44px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .slide.active { display: flex; }
+
+    /* Chrome */
+    .chrome-top {
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+    }
+    .chrome-top .brand .mark { width: 14px; height: 14px; }
+    .chrome-top .brand { gap: 8px; }
+    .chrome-top .brand span { font-size: 8.5px; }
+    .chrome-top .section-tag { gap: 10px; font-size: 8.5px; }
+
+    .chrome-bottom {
+      bottom: 12px;
+      left: 20px;
+      right: 20px;
+      font-size: 9px;
+    }
+    .chrome-bottom .counter .current-num { font-size: 11px; }
+    .chrome-bottom .progress { margin: 0 14px; }
+    .chrome-bottom .nav-hint { display: none; }
+
+    /* ========== COVER ========== */
+    .slide.cover { padding: 0; }
+    .cover-grid {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+    .cover-left {
+      flex: 1 1 auto;
+      padding: 52px 22px 18px;
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+    }
+    .cover-eyebrow { margin-bottom: 12px; font-size: 10px; }
+    .cover-title {
+      font-size: clamp(40px, 11.5vw, 64px);
+      line-height: 0.98;
+    }
+    .cover-subtitle {
+      margin-top: 16px;
+      font-size: clamp(13px, 3.8vw, 17px);
+      line-height: 1.45;
+    }
+    .cover-meta {
+      gap: 18px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .cover-meta .label { font-size: 9px; margin-bottom: 4px; }
+    .cover-meta .value { font-size: 13px; }
+    .cover-right {
+      flex: 0 0 32%;
+      min-height: 0;
+      padding: 12px 0;
+    }
+    .cover-image-frame {
+      width: 80%;
+      height: 100%;
+      padding: 10px;
+    }
+    .cover-decoration { display: none; }
+
+    /* ========== TYPOGRAPHY ========== */
+    h1.slide-title {
+      font-size: clamp(26px, 7.5vw, 38px);
+      line-height: 1.04;
+      margin-bottom: 10px;
+    }
+    h2.slide-subtitle {
+      font-size: clamp(13px, 3.8vw, 17px);
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+    .slide-eyebrow {
+      font-size: 9.5px;
+      letter-spacing: 0.2em;
+      margin-bottom: 14px;
+    }
+    .slide-eyebrow .line { width: 28px; }
+    p { font-size: 14.5px; }
+
+    /* ========== DIVIDER SLIDES ========== */
+    .divider-mark { font-size: 9.5px; margin-bottom: 20px; gap: 12px; }
+    .divider-mark .line { width: 32px; }
+    .divider-title {
+      font-size: clamp(44px, 13vw, 70px);
+      line-height: 0.96;
+    }
+    .divider-meta {
+      font-size: clamp(14px, 4vw, 18px);
+      margin-top: 24px;
+    }
+    .divider-duration {
+      font-size: 9.5px;
+      margin-top: 16px;
+    }
+
+    /* ========== STRUCTURE SLIDE ========== */
+    .structure-grid {
+      grid-template-columns: 1fr;
+      gap: 22px;
+      margin-top: 22px;
+      flex: 1 1 auto;
+      align-content: start;
+      min-height: 0;
+    }
+    .structure-item { padding-top: 22px; }
+    .structure-item .num { top: -26px; font-size: 18px; }
+    .structure-item .duration { font-size: 10px; margin-bottom: 8px; }
+    .structure-item h3 {
+      font-size: clamp(22px, 6.4vw, 28px);
+      margin-bottom: 10px;
+    }
+    .structure-item p { font-size: 13.5px; line-height: 1.5; }
+
+    /* ========== CONCEPT LAYOUT ========== */
+    .concept-layout {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 4px;
+      flex: 1 1 auto;
+      min-height: 0;
+      grid-auto-rows: min-content;
+    }
+    .concept-layout .concept-text { align-self: start; }
+    .concept-layout .col-image { justify-content: flex-start; }
+    .concept-text { max-width: 100%; }
+    .concept-text .lead {
+      font-size: clamp(16px, 4.6vw, 22px);
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .concept-text p {
+      font-size: clamp(13px, 3.8vw, 15px);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    /* Stats */
+    .stat-row {
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 14px 0 0;
+    }
+    .stat { padding-top: 10px; }
+    .stat .num {
+      font-size: clamp(34px, 10.5vw, 52px);
+    }
+    .stat .num em { font-size: 18px; }
+    .stat .label { font-size: 9.5px; margin-top: 4px; }
+
+    /* ========== DUO CARDS (neuro / visc) ========== */
+    .duo-cards {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 8px;
+      flex: 1 1 auto;
+      min-height: 0;
+      align-content: start;
+    }
+    .duo-card { padding: 18px 18px; }
+    .duo-card .latin {
+      font-size: clamp(22px, 7vw, 30px);
+    }
+    .duo-card .finnish { font-size: 14px; margin-bottom: 10px; }
+    .duo-card .count { padding-top: 10px; margin-bottom: 10px; font-size: 9.5px; }
+    .duo-card p { font-size: 13.5px; line-height: 1.5; }
+
+    /* ========== TWO-COL BONE SLIDES ========== */
+    .two-col {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      gap: 14px;
+      flex: 1 1 auto;
+      min-height: 0;
+      align-content: start;
+    }
+    .col-image {
+      flex: none;
+      min-height: 0;
+    }
+    .col-content {
+      justify-content: flex-start;
+      min-height: 0;
+    }
+    .latin-name {
+      font-size: clamp(28px, 9vw, 40px);
+      line-height: 0.98;
+      margin-bottom: 4px;
+    }
+    .finnish-name {
+      font-size: clamp(14px, 4vw, 17px);
+      margin-bottom: 12px;
+    }
+    .meaning-block { padding: 10px 0 2px; }
+    .meaning-block:last-of-type { padding-bottom: 10px; }
+    .meaning-block p {
+      font-size: clamp(12.5px, 3.6vw, 14.5px);
+      line-height: 1.45;
+    }
+    .meaning-label {
+      font-size: 9px;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+    .meaning-label .num { font-size: 12px; }
+
+    .pull-quote {
+      font-size: clamp(15px, 4.4vw, 20px);
+      line-height: 1.3;
+      padding: 4px 0 4px 16px;
+      margin: 12px 0;
+    }
+
+    /* ========== IMAGE FRAMES (mobile) ========== */
+    .image-frame {
+      flex: none;
+      width: 100%;
+      height: 26vh;
+      min-height: 0;
+      max-height: 230px;
+    }
+    .image-caption {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      margin-top: 8px;
+    }
+
+    /* ========== FLEX-EXT TRIO (slide 9) ========== */
+    .flex-ext-trio {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 4px;
+      flex: 1 1 auto;
+      min-height: 0;
+      align-content: start;
+    }
+    .flex-ext-image::before,
+    .flex-ext-image::after { display: none; }
+    .flex-ext-image {
+      width: 100%;
+      height: 24vh;
+      min-height: 0;
+      max-height: 220px;
+      flex: none;
+    }
+    .flex-ext-image .image-frame {
+      height: 100%;
+      max-height: none;
+    }
+    .flex-ext-state.is-exhale { text-align: left; }
+    .flex-ext-state.is-exhale .state-header { flex-direction: row; }
+    .flex-ext-state.is-exhale ul li {
+      padding-left: 20px;
+      padding-right: 0;
+    }
+    .flex-ext-state.is-exhale ul li::before {
+      left: 0;
+      right: auto;
+    }
+    .flex-ext-state .state-header {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      gap: 12px;
+    }
+    .state-header h3 {
+      font-size: clamp(26px, 8.5vw, 36px);
+    }
+    .flex-ext-state .state-label { font-size: 9.5px; }
+    .flex-ext-state ul li {
+      font-size: 13.5px;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      padding-left: 20px;
+    }
+    /* Save battery — drop the breath animation on small screens */
+    .flex-ext-image .image-frame img { animation: none; }
+
+    /* ========== SBS SLIDE ========== */
+    .sbs-layout {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 4px;
+      flex: 1 1 auto;
+      min-height: 0;
+      align-content: start;
+    }
+    .sbs-list { align-self: start; }
+    .sbs-list li {
+      padding: 10px 0 10px 38px;
+      font-size: 13.5px;
+      line-height: 1.4;
+    }
+    .sbs-list li::before { top: 11px; font-size: 10px; }
+
+    /* ========== EXERCISE CARD ========== */
+    .exercise-card {
+      padding: 22px 20px;
+      margin-top: 16px;
+    }
+    .exercise-card .tag { font-size: 9.5px; margin-bottom: 10px; }
+    .exercise-card h3 {
+      font-size: clamp(20px, 6.2vw, 26px);
+      margin-bottom: 10px;
+    }
+    .exercise-card p {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    /* ========== CLOSING SLIDE ========== */
+    .closing-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 4px;
+      flex: 1 1 auto;
+      min-height: 0;
+      align-content: start;
+    }
+    .closing-item { padding-top: 14px; }
+    .closing-item .num { margin-bottom: 8px; font-size: 9.5px; }
+    .closing-item h3 {
+      font-size: clamp(20px, 6.2vw, 26px);
+      margin-bottom: 8px;
+    }
+    .closing-item p {
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    /* ========== VIEW TOGGLE (sphenoid / ethmoid) ========== */
+    .view-toggle { margin-top: 8px; }
+    .view-toggle-btn {
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      gap: 10px;
+      padding-top: 10px;
+    }
+    .view-toggle-btn .num { font-size: 12px; }
+
+    /* Help overlay */
+    .help-content { font-size: 11.5px; line-height: 1.9; }
+  }
+
+  /* ========== SHORT VIEWPORTS (landscape phones, small phones) ========== */
+  @media (max-width: 900px) and (max-height: 700px) {
+    .slide { padding: 46px 18px 38px; }
+    .image-frame { height: 22vh; max-height: 180px; }
+    .flex-ext-image { height: 22vh; max-height: 180px; }
+    .cover-right { flex: 0 0 28%; }
+    .meaning-block { padding: 8px 0 2px; }
+    .meaning-block:last-of-type { padding-bottom: 8px; }
+    .latin-name { font-size: clamp(26px, 8vw, 34px); }
+    .finnish-name { margin-bottom: 8px; }
+    .structure-grid { gap: 16px; margin-top: 16px; }
+    .closing-grid { gap: 10px; }
+    .closing-item { padding-top: 10px; }
+  }
+
+  /* ========== VERY SMALL PHONES (iPhone SE, older Androids) ========== */
+  @media (max-width: 380px) {
+    .slide { padding: 50px 16px 42px; }
+    .cover-left { padding: 50px 18px 14px; }
+    .cover-title { font-size: clamp(34px, 10.5vw, 44px); }
+    .divider-title { font-size: clamp(40px, 12vw, 56px); }
+    h1.slide-title { font-size: clamp(22px, 7vw, 30px); }
+    .latin-name { font-size: clamp(26px, 8.5vw, 34px); }
+    .state-header h3 { font-size: clamp(24px, 8vw, 32px); }
+    .image-frame { height: 22vh; max-height: 180px; }
+    .flex-ext-image { height: 22vh; max-height: 180px; }
+    .meaning-block p { font-size: 12.5px; }
+    .closing-item h3, .exercise-card h3 { font-size: clamp(18px, 5.8vw, 24px); }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="stage">
+
+<!-- ===================== DECK ===================== -->
+<div class="deck" id="deck">
+
+<!-- ===================== TOP CHROME ===================== -->
+<div class="chrome-top">
+  <div class="brand">
+    <div class="mark"></div>
+    <span>Kraniosakraaliterapia · Webinaari</span>
+  </div>
+  <div class="section-tag" id="sectionTag">
+    <span data-section="intro">Johdanto</span>
+    <span data-section="bones">Luu kerrallaan</span>
+    <span data-section="summary">Yhteenveto</span>
+  </div>
+</div>
+
+<!-- ============ 1. COVER ============ -->
+<section class="slide cover active" data-section="cover">
+  <div class="cover-grid">
+    <div class="cover-left">
+      <div>
+        <div class="cover-eyebrow"><span class="line"></span>Webinaari · 1,5 h</div>
+        <h1 class="cover-title">
+          Kranio&shy;sakraali&shy;<em>terapia</em>
+        </h1>
+        <p class="cover-subtitle">
+          Kallon luut, niiden emotionaalinen merkitys
+          ja anatomiset yhteydet kehon kokonaisuuteen.
+        </p>
+      </div>
+      <div class="cover-meta">
+        <div>
+          <span class="label">Aihe</span>
+          <span class="value">22 luuta · 100+ saumaa</span>
+        </div>
+        <div>
+          <span class="label">Kesto</span>
+          <span class="value">90 minuuttia</span>
+        </div>
+        <div>
+          <span class="label">Rakenne</span>
+          <span class="value">Kolme osaa</span>
+        </div>
+      </div>
+    </div>
+    <div class="cover-right">
+      <div class="cover-image-frame">
+        <img src="pictures/skull.png" alt="Ihmiskallo — lateraalinen näkymä">
+      </div>
+      <div class="cover-decoration">Os · Sutura · Membrana</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. STRUCTURE ============ -->
+<section class="slide" data-section="cover">
+  <div class="slide-eyebrow"><span class="line"></span>Webinaarin rakenne</div>
+  <h1 class="slide-title">Kolme <em>osaa</em>, yksi kokonaisuus.</h1>
+  <h2 class="slide-subtitle">
+    Aloitamme käsitteistä ja anatomiasta, etenemme luusta luuhun,
+    ja päätämme yhteenvetoon ja avoimeen keskusteluun.
+  </h2>
+
+  <div class="structure-grid">
+    <div class="structure-item">
+      <div class="num">i.</div>
+      <div class="duration">10 min</div>
+      <h3>Johdanto</h3>
+      <p>Kallon rakenne, dura mater, aivo-selkäydinneste ja kraniosakraalisen liikkeen perusta — fleksio ja ekstensio.</p>
+    </div>
+    <div class="structure-item">
+      <div class="num">ii.</div>
+      <div class="duration">60 min</div>
+      <h3>Luu kerrallaan</h3>
+      <p>Yhdeksän keskeistä luuta: emotionaalinen merkitys, symbolinen taso ja anatomiset yhteydet kehon kokonaisuuteen.</p>
+    </div>
+    <div class="structure-item">
+      <div class="num">iii.</div>
+      <div class="duration">20 min</div>
+      <h3>Yhteenveto</h3>
+      <p>Kertaus keskeisistä yhteyksistä sekä avoin tila kysymyksille ja keskustelulle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. SECTION DIVIDER: JOHDANTO ============ -->
+<section class="slide divider" data-section="intro">
+  <div class="divider-mark"><span class="line"></span>OSA I<span class="line"></span></div>
+  <h1 class="divider-title"><em>Johdanto</em><br/>kallon kieleen.</h1>
+  <p class="divider-meta">Luut, kalvot, neste, rytmi.</p>
+  <div class="divider-duration">10 minuuttia</div>
+</section>
+
+<!-- ============ 4. CRANIUM OVERVIEW ============ -->
+<section class="slide" data-section="intro">
+  <div class="slide-eyebrow"><span class="line"></span>Kallon perusrakenne</div>
+  <h1 class="slide-title">22 luuta. <em>Yli sata</em> saumaa.</h1>
+
+  <div class="concept-layout">
+    <div class="concept-text">
+      <p class="lead">
+        Kallo ei ole yhtenäinen kova kuori, vaan herkästi liittyvien luiden
+        kokonaisuus.
+      </p>
+      <p>
+        Kallon luiden välillä on yli sata saumaa eli suturaa.
+        Ne eivät ole kiinteitä liitoksia — ne mahdollistavat luiden
+        <strong>hienovaraisen liikkeen</strong> suhteessa toisiinsa.
+      </p>
+      <p>
+        Tämä liike on perusta kraniosakraaliselle rytmille
+        ja sille hienolle viestintävirralle, joka kulkee kalvoissa,
+        nesteissä ja faskian kautta läpi koko kehon.
+      </p>
+
+      <div class="stat-row" style="margin-top:36px;">
+        <div class="stat">
+          <div class="num">22</div>
+          <div class="label">Luuta</div>
+        </div>
+        <div class="stat">
+          <div class="num">100<em>+</em></div>
+          <div class="label">Saumaa</div>
+        </div>
+        <div class="stat">
+          <div class="num">12</div>
+          <div class="label">Aivohermoa</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/skull%2002.png" alt="Kallon kokonaiskuva — 22 luuta">
+      </div>
+      <div class="image-caption">→ 22 luuta · suturat · neurocranium / viscerocranium</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. NEURO / VISCEROCRANIUM ============ -->
+<section class="slide" data-section="intro">
+  <div class="slide-eyebrow"><span class="line"></span>Kallon kaksi aluetta</div>
+  <h1 class="slide-title">Aivot suojassa,<br/>kasvot <em>ilmaisussa</em>.</h1>
+  <h2 class="slide-subtitle">
+    Kallo jakaantuu kahteen toiminnalliseen kokonaisuuteen:
+    aivoja suojaavaan holvirakenteeseen ja kasvojen luustoon.
+  </h2>
+
+  <div class="duo-cards">
+    <div class="duo-card">
+      <div class="latin">Neurocranium</div>
+      <div class="finnish">Aivokallo</div>
+      <div class="count">8 luuta · holvirakenne</div>
+      <p>Suojaa aivoja ja muodostaa kallon ylä- ja takaosan kupolimaisen rakenteen. Sen sisällä lepää keskushermoston herkin alue.</p>
+    </div>
+    <div class="duo-card">
+      <div class="latin">Viscerocranium</div>
+      <div class="finnish">Kasvokallo</div>
+      <div class="count">14 luuta · kasvojen luusto</div>
+      <p>Muodostaa kasvojen luiset rakenteet — silmäkuopat, nenän, leuat ja poskipielet. Toimii ilmaisun, hengityksen ja syömisen anatomisena pohjana.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. CRANIAL NERVES ============ -->
+<section class="slide" data-section="intro">
+  <div class="slide-eyebrow"><span class="line"></span>12 aivohermoa · vapaa liike</div>
+  <h1 class="slide-title">Hermot kulkevat <em>luun läpi</em>.</h1>
+
+  <div class="concept-layout">
+    <div class="concept-text">
+      <p class="lead">
+        Kallon luiden läpi ja niiden välisistä aukoista kulkevat
+        kaikki kaksitoista aivohermoa.
+      </p>
+      <p>
+        Luiden vapaa liikkuminen on edellytys sille, että hermot voivat
+        toimia vapaasti. Pieni jännitys luussa tai saumassa voi vaikuttaa
+        hermon toimintaan.
+      </p>
+      <p>
+        Jos kallon luut eivät liiku niin kuin niiden tulisi, se voi
+        <strong>heijastua laajasti hermostoon, faskiaan ja koko kehon
+        kokonaistilaan</strong>.
+      </p>
+    </div>
+
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/nervesInSphenoid.png" alt="Aivohermojen ulostulot kitaluun ja kallon pohjan kautta">
+      </div>
+      <div class="image-caption">→ Kallon pohja · foramina · nervi craniales I–XII</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. DURA MATER ============ -->
+<section class="slide" data-section="intro">
+  <div class="slide-eyebrow"><span class="line"></span>Kova aivokalvo</div>
+  <h1 class="slide-title"><em>Dura mater</em> — yhtenäinen jatkumo.</h1>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/Dural%20Mater.png" alt="Dura mater — kallosta sakrumiin">
+      </div>
+      <div class="image-caption">→ Dura mater · kallosta sakrumiin · jatkumo</div>
+    </div>
+    <div class="col-content">
+      <p style="font-size:19px; line-height:1.65; color:var(--ink);">
+        Dura mater <strong>käärii aivot sisälleen ja suojaa selkäydintä</strong>.
+        Se on osa keskushermoston suojajärjestelmää.
+      </p>
+      <p style="font-size:19px; line-height:1.65;">
+        Se muodostaa myös sisäiset rakenteet:
+        <strong>aivosirpin (falx cerebri)</strong>, joka kulkee aivojen
+        vasemman ja oikean puoliskon välissä, sekä
+        <strong>pikkuaivoteltan (tentorium cerebelli)</strong>,
+        joka erottaa isoaivot pikkuaivoista.
+      </p>
+      <p style="font-size:19px; line-height:1.65;">
+        Duuraputki kulkee kallon pohjalta aina sakrumiin asti
+        — yhtenäisenä, jännittyvänä ja vapautuvana kokonaisuutena.
+      </p>
+
+      <div class="pull-quote">
+        Mikä tahansa tapahtuma yhdessä kohdassa duuraa
+        heijastuu väistämättä myös toiseen päähän.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. CSF ============ -->
+<section class="slide" data-section="intro">
+  <div class="slide-eyebrow"><span class="line"></span>Aivo-selkäydinneste · likvor · CSF</div>
+  <h1 class="slide-title">Neste, joka <em>tuottaa rytmin</em>.</h1>
+
+  <div class="concept-layout">
+    <div class="concept-text">
+      <p>
+        Aivo-selkäydinneste tuotetaan aivojen ventrikkeleissä
+        ja kiertää keskushermostossa subaraknoiditilassa.
+      </p>
+      <p>
+        Se <strong>ravitsee, suojaa ja huuhtoo kuona-aineita</strong>
+        keskushermostosta. Toimii iskunvaimentimena ja antaa aivoille
+        kelluntakyvyn — aivot painavat nesteessä huomattavasti
+        vähemmän kuin ilmassa.
+      </p>
+      <div class="pull-quote" style="margin-top:32px;">
+        Selkäydinnesteen paineen ja kierron fluktuaatiot
+        tuottavat hienoisen rytmisen liikkeen
+        kraniosakraalijärjestelmässä — kraniaalisen rytmin.
+      </div>
+    </div>
+
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/Cerebrospinalfluid.png" alt="Aivo-selkäydinneste — ventrikkelit ja kierto">
+      </div>
+      <div class="image-caption">→ Ventrikkelit · subaraknoiditila · CSF-kierto</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. FLEXION / EXTENSION ============ -->
+<section class="slide" data-section="intro">
+  <div class="slide-eyebrow"><span class="line"></span>Kraniosakraalinen liike</div>
+  <h1 class="slide-title">Hengitys, jota <em>luut kuuntelevat</em>.</h1>
+  <h2 class="slide-subtitle">
+    Kallon liike tapahtuu kahden vaiheen kautta — fleksion ja ekstension.
+    Tämä rytmi heijastuu koko kehoon.
+  </h2>
+
+  <div class="flex-ext-trio">
+    <div class="flex-ext-state is-inhale">
+      <div class="state-header">
+        <span class="state-label">01 · Sisäänhengitys</span>
+        <h3>Fleksio</h3>
+      </div>
+      <ul>
+        <li><strong>Kallo levenee ja lyhenee</strong></li>
+        <li>Parilliset luut rotatoituvat ulospäin ja alaspäin</li>
+        <li>Parittomat luut liikkuvat alaspäin</li>
+        <li>Keho rotatoituu ulospäin</li>
+      </ul>
+    </div>
+
+    <div class="flex-ext-image">
+      <div class="image-frame">
+        <img src="pictures/flexion%26extension.png" alt="Kallon fleksio ja ekstensio">
+      </div>
+    </div>
+
+    <div class="flex-ext-state is-exhale">
+      <div class="state-header">
+        <span class="state-label">02 · Uloshengitys</span>
+        <h3>Ekstensio</h3>
+      </div>
+      <ul>
+        <li><strong>Kallo kapenee ja pitenee</strong></li>
+        <li>Parilliset luut rotatoituvat sisäänpäin ja ylöspäin</li>
+        <li>Parittomat luut liikkuvat ylöspäin</li>
+        <li>Keho rotatoituu sisäänpäin</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. SECTION DIVIDER: LUU KERRALLAAN ============ -->
+<section class="slide divider" data-section="bones">
+  <div class="divider-mark"><span class="line"></span>OSA II<span class="line"></span></div>
+  <h1 class="divider-title">Luu <em>kerrallaan</em>.</h1>
+  <p class="divider-meta">
+    Emotionaalinen merkitys · symbolinen taso · anatomiset yhteydet.
+  </p>
+  <div class="divider-duration">60 minuuttia · 9 luuta</div>
+</section>
+
+<!-- ============ 11. OS OCCIPITALE ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu I · Takaraivoluu</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/occiputOnSkull.png" alt="Os occipitale — takaraivoluu kallossa">
+      </div>
+      <div class="image-caption">→ Os occipitale · 4 osaa syntymässä · luutuu 3–6 v.</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Os occipitale</div>
+      <div class="finnish-name">Takaraivoluu</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p>Takaraivoluu kantaa muistoja — se on ikään kuin <strong>muistojen vartija</strong>, erityisesti kehollisten ja tunnemuistojen. Stressi kiristää usein takaraivoluun alueen kalvostoa.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
+        <p>Intuitiivinen näkökyky — kyky aistia ja hahmottaa ilman analyyttistä ajattelua.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>Anatomiset yhteydet</div>
+        <p>Koostuu syntyessä neljästä osasta — luutuu yhteen n. 3–6 v. Yhteys atlaksen (C1), vagushermon ja jugulaarisen aukon kautta. Duura kiinnittyy vahvasti <strong>foramen magnumin ympärille</strong>. Fyysiset vammat missä tahansa kehossa voivat heijastua takaraivoluuhun duuran ja kalvoston kautta — yhtenäisenä jatkumona koko kehon läpi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12. OCCIPUT — SACRUM CONNECTION ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Os occipitale · syvempi yhteys</div>
+  <h1 class="slide-title">Takaraivoluu ja sakrum<br/>— <em>yksi pari</em>.</h1>
+
+  <div class="concept-layout">
+    <div class="concept-text">
+      <p class="lead">
+        Takaraivoluu ja sakrum ovat duuran kautta
+        kiinteässä yhteydessä toisiinsa.
+      </p>
+      <p>
+        Ne <strong>vaikuttavat toinen toisiinsa</strong> jatkuvasti.
+        Jännitys tai vapautuminen toisessa heijastuu aina myös toiseen.
+      </p>
+      <div class="pull-quote">
+        Takaraivoluu on tiiviissä yhteydessä ylempiin kaulanikamiin
+        — mitä tapahtuu toisessa, heijastuu toiseen.
+      </div>
+      <p>
+        Synnytyksen voimat voivat aiheuttaa takaraivoluun eri osien
+        keskinäistä kiertymistä sekä kondyyleihin kohdistuvaa puristusta.
+        <strong>Nämä tallentumat voivat olla näkyvissä vielä aikuisena.</strong>
+      </p>
+    </div>
+
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/sacrum.png" alt="Sakrum — duuran toinen pää">
+      </div>
+      <div class="image-caption">→ Occiput · dura · sacrum · yhteinen jännitelinja</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13. OS SPHENOIDALE ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu II · Kitaluu</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame view-toggle-frame">
+        <img class="view-image is-active" data-view="in-skull" src="pictures/sphenoidOnSkull.png" alt="Os sphenoidale — kitaluu kallossa">
+        <img class="view-image" data-view="isolated" src="pictures/sphenoid%20bone.png" alt="Os sphenoidale — eristettynä">
+      </div>
+      <div class="view-toggle" role="tablist" aria-label="Sphenoid view">
+        <button type="button" class="view-toggle-btn is-active" data-view="in-skull" role="tab" aria-selected="true">
+          <span class="num">01</span>
+          <span class="label">Kallossa</span>
+        </button>
+        <button type="button" class="view-toggle-btn" data-view="isolated" role="tab" aria-selected="false">
+          <span class="num">02</span>
+          <span class="label">Eristettynä</span>
+        </button>
+      </div>
+      <div class="image-caption">→ Os sphenoidale · kallon "avain" · perhonen</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Os sphenoidale</div>
+      <div class="finnish-name">Kitaluu</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p>Vahva yhteys psyykkeeseen — vaikuttaa <strong>mielialaan, stressinsietokykyyn ja uneen</strong>. Voi ottaa häiriötä mistä tahansa kehossa tapahtuvasta.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
+        <p>Syväymmärrys ja selkeä näkökyky.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>Anatomiset yhteydet</div>
+        <p>Koskettaa lähes kaikkia kallon luita. <strong>Suurin voima kraniosakraaliliikkeessä.</strong> Vaikuttaa silmiin, nieluun, poskionteloihin ja korviin. Duura kiinnittyy kitaluuhun <strong>turkinsatulan alueelle</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14. SPHENOID + HYPOFYYSI ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Os sphenoidale · turkinsatula · hypofyysi</div>
+  <h1 class="slide-title">Hormonien <em>satula</em>.</h1>
+
+  <div class="concept-layout">
+    <div class="concept-text">
+      <p class="lead">
+        Turkinsatula <em>(sella turcica)</em> on kitaluun muodostama kuoppa,
+        jossa hypofyysi — aivolisäke — lepää.
+      </p>
+      <p>
+        Hypofyysi <strong>ohjaa koko kehon hormonijärjestelmää</strong>:
+        kilpirauhanen, lisämunuaiset, sukurauhaset, kasvuhormoni.
+      </p>
+      <p>
+        Kitaluun liikkuvuus on siten tärkeää — se mahdollistaa,
+        että hypofyysi voi levätä turkinsatulassaan ja toimia
+        kallon rytmin mukana.
+      </p>
+      <div class="pull-quote">
+        Kun kitaluu liikkuu vapaasti, hypofyysi hengittää sen mukana.
+      </div>
+    </div>
+
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/PituitaryGlandOnSpenoid.png" alt="Aivolisäke turkinsatulassa — kitaluun yläpinta">
+      </div>
+      <div class="image-caption">→ Sella turcica · hypophysis cerebri</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15. SBS ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Synchondrosis spheno-basilaris</div>
+  <h1 class="slide-title">SBS — kraniosakraalinen <em>lähtöpiste</em>.</h1>
+
+  <div class="sbs-layout">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/SBS%20junction.png" alt="Sphenobasilar synchondrosis — kitaluun ja takaraivoluun liitos">
+      </div>
+      <div class="image-caption">→ Sphenobasilar synchondrosis · liikkeen origo</div>
+    </div>
+
+    <ol class="sbs-list">
+      <li>Kitaluun ja takaraivoluun välinen <strong>nivel kallonpohjassa</strong>.</li>
+      <li>Kraniosakraalisen liikkeen lähtöpiste — sieltä liike säteilee kaikkiin kallon luihin.</li>
+      <li>Liike kulkee duraaliputkea pitkin <strong>sakrumiin ja coccyxiin saakka</strong>.</li>
+      <li>SBS:n liikkuvuus on edellytys koko kraniosakraalisen järjestelmän vapaalle toiminnalle.</li>
+      <li>Kompressio tai vääristymä SBS:ssä heijastuu laajasti — hermosto, hormonitoiminta, autonominen säätely.</li>
+      <li>Mukautuu kaikkeen organisaatioon ja kaikkeen historiaan.</li>
+      <li><strong>SBS peilaa lantiota.</strong></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 16. OSSA TEMPORALIA ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu III · Ohimoluut</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/temporallisOnSkull.png" alt="Os temporale — ohimoluu kallossa">
+      </div>
+      <div class="image-caption">→ Os temporale · sisäkorva · TMJ · jugularis</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Ossa temporalia</div>
+      <div class="finnish-name">Ohimoluut</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p><strong>Kuuleminen ja kuulluksi tuleminen</strong> — mitä haluan kuulla, mitä kuulen. Kommunikaation haasteet, ilmaisun pidättäminen TMJ:n kautta. Huimaus voi heijastua emotionaaliseen epävarmuuteen.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
+        <p>Elämän tasapaino, joustavuus ja itseilmaisu.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>Anatomiset yhteydet</div>
+        <p>Vestibulaarijärjestelmä · TMJ · spiraalinen faskiaketju ohimoluusta lonkkaan · vagushermo jugulaarisen aukon kautta. Duura kiinnittyy ohimoluun <strong>kallio-osaan (pars petrosa)</strong>. Huimaus ja tasapainohäiriöt liittyvät usein ohimoluun liikkuvuuteen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17. OSSA PARIETALIA ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu IV · Päälakiluut</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/parietalOnSkull.png" alt="Ossa parietalia — päälakiluut kallossa">
+      </div>
+      <div class="image-caption">→ Ossa parietalia · sagittaali · koronaali · lambdoidi</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Ossa parietalia</div>
+      <div class="finnish-name">Päälakiluut</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p>Rauhattomuus.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
+        <p>Yhteys korkeampaan tietoisuuteen, integraatio.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>Anatomiset yhteydet</div>
+        <p>Alla <strong>somatosensorinen ja motorinen aivokuori</strong> — käsittelee kehon tuntoaistimuksia ja ohjaa liikettä. Sagittaali-, koronaali- ja lambdoidisuturat liittävät päälakiluut otsaluuhun ja takaraivoluuhun. Päälakiluilla on <strong>laaja kiinnittyminen duuraan</strong> — sama duura kiinnittyy myös ohimoluuhun, kitaluuhun, takaraivoluuhun, otsaluuhun ja seulaluuhun.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18. OS FRONTALE ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu V · Otsaluu</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/frontalBoneOnSkull.png" alt="Os frontale — otsaluu kallossa">
+      </div>
+      <div class="image-caption">→ Os frontale · prefrontaalikorteksi · sinus frontalis</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Os frontale</div>
+      <div class="finnish-name">Otsaluu</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Symbolinen merkitys</div>
+        <p>Kyky <strong>nähdä ja kulkea eteenpäin</strong> maailmassa.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Anatomiset yhteydet</div>
+        <p>Alla <strong>prefrontaalikorteksi</strong> — aivojen kehittynein osa, joka vastaa päivittäisistä toiminnoista. Duura kiinnittyy otsaluun sisäpintaan ja <strong>seulaluun crista galliin</strong>. Yhteys silmiin ja niiden verenkiertoon, frontaalisiin poskionteloihin, seulaluuhun ja kitaluuhun. Otsaluu liittyy myös otsapäänsärkyihin.</p>
+      </div>
+
+      <div class="meaning-block" style="border-bottom:1px solid var(--line); padding-bottom:22px;">
+        <div class="meaning-label"><span class="num">iii.</span>Käytännön merkitys</div>
+        <p>Otsaluun vapautuminen voi vaikuttaa selkeyteen, päätöksentekoon ja kykyyn pitää suuntaa. Usein "ajatusten paine" tuntuu juuri täällä.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OS ETHMOIDALE ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu VI · Seulaluu</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame view-toggle-frame">
+        <img class="view-image is-active" data-view="in-skull" src="pictures/EthmoidOnSkull.png" alt="Os ethmoidale — seulaluu kallossa">
+        <img class="view-image" data-view="isolated" src="pictures/Ethmoid.png" alt="Os ethmoidale — eristettynä">
+      </div>
+      <div class="view-toggle" role="tablist" aria-label="Ethmoid view">
+        <button type="button" class="view-toggle-btn is-active" data-view="in-skull" role="tab" aria-selected="true">
+          <span class="num">01</span>
+          <span class="label">Kallossa</span>
+        </button>
+        <button type="button" class="view-toggle-btn" data-view="isolated" role="tab" aria-selected="false">
+          <span class="num">02</span>
+          <span class="label">Eristettynä</span>
+        </button>
+      </div>
+      <div class="image-caption">→ Os ethmoidale · lamina cribrosa · crista galli · falx cerebri</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Os ethmoidale</div>
+      <div class="finnish-name">Seulaluu</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Symbolinen merkitys</div>
+        <p><strong>Intuitio ja sisäinen näkeminen</strong> — aistiminen, joka tapahtuu ennen sanoja. Joissakin perinteissä kutsuttu kolmannen silmän luuksi.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Anatomiset yhteydet</div>
+        <p><strong>Lamina cribrosa</strong> — seulalevy, jonka läpi hajuhermon kuidut kulkevat suoraan aivoihin. <strong>Crista galli</strong> ankkuroi aivosirpin (falx cerebri) — sama kalvojatkumo, joka päättyy lopulta sakrumiin. Niveltyy otsaluuhun, kitaluuhun, yläleukaan ja vomeriin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19. MAXILLA ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu VII · Yläleuka</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/maxillaOnSkull.png" alt="Maxilla — yläleuka kallossa">
+      </div>
+      <div class="image-caption">→ Maxilla · kova kitalaki · etuketjun faskia</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Maxilla</div>
+      <div class="finnish-name">Yläleuka</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p>Hengitysasento <strong>heijastaa emotionaalista tilaa</strong>.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
+        <p>Kommunikaatiokyky.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>Anatomiset yhteydet</div>
+        <p>Suojelee aivoja ja vaimentaa purentaliikettä. Yläleuka muodostaa osan nenäontelosta ja <strong>kovasta kitalaesta</strong>, ja liittyy hengitykseen, nielemiseen ja kielen asentoon. <strong>Nenähengitys</strong> kulkee yläleuan alueen kautta — sen muutokset vaikuttavat myös rintakehän hengitysmekaniikkaan. Yhteys <strong>etuketjun faskian</strong> kautta rintakehään.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20. MANDIBULA — EMOTIONAL ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu VIII · Alaleuka · ilmaisu</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/mandibleOnSkull.png" alt="Mandibula — alaleuka kallossa">
+      </div>
+      <div class="image-caption">→ Mandibula · TMJ · ainoa liikkuva kalloluu</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Mandibula</div>
+      <div class="finnish-name">Alaleuka</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p><strong>Ilmaisu ja sanomatta jääneet asiat.</strong> Viha, pidättäminen, kontrolli. Leuka on usein ensimmäinen paikka, johon stressi tallentuu — ja leuan vapautuminen vapauttaa usein myös lantionpohjaa.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Autonominen yhteys</div>
+        <p>Leuka on herkkä autonomisen hermoston tilalle. Sympaattisen hermoston aktivoituessa — taistele-pakene-tilassa — leuka jännittyy automaattisesti. <strong>Hampaiden pureminen on usein merkki ylivireyden tilasta.</strong></p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>TMJ — tallennuspaikka</div>
+        <p>Aggressio · viha · raivo · turhautuminen · päättäväisyys · romahtaminen · vetäytyminen · luovuttaminen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 21. MANDIBULA — EXERCISE ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Mandibula · käytännön harjoitus</div>
+  <h1 class="slide-title">Hetki <em>yhdessä</em>.</h1>
+  <h2 class="slide-subtitle">
+    Pieni kokemuksellinen pysähdys ennen kuin etenemme
+    alaleuan anatomisiin yhteyksiin.
+  </h2>
+
+  <div class="exercise-card">
+    <div class="tag">Harjoitus · 60 sekuntia</div>
+    <h3>Rentoutetaan leuka hetki yhdessä.</h3>
+    <p>
+      Päästä alaleukaasi laskeutumaan. Anna hampaiden erkaantua hieman
+      toisistaan. Kieli rentona. Hengitys kulkee vapaasti.
+      <strong>Havainnoi, mitä muualla kehossa tapahtuu</strong> —
+      kaulassa, hartioissa, lantionpohjassa, hengityksessä.
+    </p>
+  </div>
+</section>
+
+<!-- ============ 22. MANDIBULA — ANATOMICAL CHAIN ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Mandibula · faskiaalinen jatkumo</div>
+  <h1 class="slide-title">Leuasta <em>lantioon</em>.</h1>
+
+  <div class="concept-layout">
+    <div class="concept-text">
+      <p class="lead">
+        Alaleuka on <em>ainoa liikkuva kalloluu</em>.
+        Sen vaikutus ulottuu kuitenkin paljon kalloa kauemmas
+        — <strong>faskiaalisen yhteyden</strong> kautta.
+      </p>
+      <p>
+        Purentalihakset ja lantionpohjan lihakset ovat myös osittain
+        yhteydessä <strong>autonomiseen hermostoon</strong> —
+        esimerkiksi vaguksen ja trigeminuksen kautta.
+      </p>
+      <p>
+        Kun hengitys toimii huonosti, myös lantionpohja voi heikentyä.
+        Huono ryhti puolestaan lisää kuormitusta tähän ketjuun —
+        sekä lantionpohjaan että purentalihaksiin.
+      </p>
+      <div class="pull-quote">
+        Alaleuan vapautuminen vaikuttaa atlas/axis-alueeseen,
+        yläkaularankaan, niskaan, rintakehään, alaselkään
+        ja koko lantioalueeseen.
+      </div>
+    </div>
+
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/Pelvis%26Mandible.png" alt="Faskiaalinen ketju leuasta lantioon">
+      </div>
+      <div class="image-caption">→ Anteriorinen faskiaketju · leuasta sakrumiin</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 23. OS ZYGOMATICUM ============ -->
+<section class="slide" data-section="bones">
+  <div class="slide-eyebrow"><span class="line"></span>Luu IX · Poskiluu</div>
+
+  <div class="two-col">
+    <div class="col-image">
+      <div class="image-frame">
+        <img src="pictures/zygomaticusOnSkull.png" alt="Os zygomaticum — poskiluu kallossa">
+      </div>
+      <div class="image-caption">→ Os zygomaticum · liitokset 4 naapuriluuhun</div>
+    </div>
+
+    <div class="col-content">
+      <div class="latin-name">Os zygomaticum</div>
+      <div class="finnish-name">Poskiluu</div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
+        <p><strong>Näkyminen ja nähdyksi tuleminen.</strong> Hymy ja suru kulkevat tämän alueen lihaksiston kautta.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
+        <p>Voima ja suojelu.</p>
+      </div>
+
+      <div class="meaning-block">
+        <div class="meaning-label"><span class="num">iii.</span>Anatomiset yhteydet</div>
+        <p>Niveltyy <strong>neljän luun kanssa</strong>: otsaluu, kitaluu, ohimoluu ja yläleuka. Pyrkii aina sopeutumaan jännityksiin näiden välillä. Iskunvaimennus — yksi kasvojen vahvimmista rakenteista, suojaa ohimoluuta ja silmäkuoppaa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 24. SECTION DIVIDER: YHTEENVETO ============ -->
+<section class="slide divider" data-section="summary">
+  <div class="divider-mark"><span class="line"></span>OSA III<span class="line"></span></div>
+  <h1 class="divider-title"><em>Yhteenveto</em><br/>ja keskustelu.</h1>
+  <p class="divider-meta">
+    Kertaus keskeisistä yhteyksistä — sekä avoin tila kysymyksille.
+  </p>
+  <div class="divider-duration">20 minuuttia</div>
+</section>
+
+<!-- ============ 25. CLOSING ============ -->
+<section class="slide" data-section="summary">
+  <div class="slide-eyebrow"><span class="line"></span>Mitä jää käteen</div>
+  <h1 class="slide-title">Kallon kieli on <em>kehon kieli</em>.</h1>
+  <h2 class="slide-subtitle">
+    Kraniosakraaliterapia kuuntelee niitä hienoja viestejä,
+    joita luut, kalvot ja nesteet kuljettavat — ja sallii kehon
+    löytää oman tasapainonsa uudelleen.
+  </h2>
+
+  <div class="closing-grid">
+    <div class="closing-item">
+      <div class="num">→ 01</div>
+      <h3>Kaikki on yhteydessä.</h3>
+      <p>Duuraputki yhdistää takaraivoluun sakrumiin. Faskiaalinen jatkumo yhdistää alaleuan lantionpohjaan. Mikään luu ei liiku yksin.</p>
+    </div>
+    <div class="closing-item">
+      <div class="num">→ 02</div>
+      <h3>Liike kantaa tarinaa.</h3>
+      <p>Syntymä, vammat ja emotionaaliset tallentumat näkyvät luiden liikkeessä. Vapaa liike on edellytys hermoston, hormonien ja autonomisen säätelyn vapaalle toiminnalle.</p>
+    </div>
+    <div class="closing-item">
+      <div class="num">→ 03</div>
+      <h3>SBS peilaa lantiota.</h3>
+      <p>Kallon pohja ja lantio peilaavat toisiaan. Yhdessä kohdassa tapahtuva muutos heijastuu välittömästi toisessa.</p>
+    </div>
+    <div class="closing-item">
+      <div class="num">→ 04</div>
+      <h3>Kysymyksille tila.</h3>
+      <p>Mitä heräsi? Mikä jäi mietityttämään? Avoin keskustelu — anatomiasta, kokemuksista ja käytännön havainnoista.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- ===================== BOTTOM CHROME ===================== -->
+<div class="chrome-bottom">
+  <div class="counter">
+    <span class="current-num" id="currentNum">01</span>
+    <span>/ <span id="totalNum">26</span></span>
+  </div>
+  <div class="progress"><div class="fill" id="progressFill"></div></div>
+  <div class="nav-hint">← →&nbsp;&nbsp;Navigoi&nbsp;&nbsp;·&nbsp;&nbsp;F Koko ruutu&nbsp;&nbsp;·&nbsp;&nbsp;? Apu</div>
+  <button class="fs-btn" id="fsBtn" type="button" aria-label="Toggle fullscreen" title="Koko ruutu (F)">
+    <svg viewBox="0 0 14 14" aria-hidden="true">
+      <path d="M0,4 L0,0 L4,0 M10,0 L14,0 L14,4 M14,10 L14,14 L10,14 M4,14 L0,14 L0,10"/>
+    </svg>
+  </button>
+</div>
+
+</div><!-- /deck -->
+
+</div><!-- /stage -->
+
+<!-- ===================== HELP OVERLAY ===================== -->
+<div class="help-overlay" id="helpOverlay">
+  <div class="help-content">
+    Pikanäppäimet<br><br>
+    <kbd>←</kbd> <kbd>→</kbd>&nbsp;&nbsp;Edellinen / seuraava<br>
+    <kbd>Space</kbd>&nbsp;&nbsp;Seuraava<br>
+    <kbd>Home</kbd>&nbsp;&nbsp;Alkuun<br>
+    <kbd>End</kbd>&nbsp;&nbsp;Loppuun<br>
+    <kbd>F</kbd>&nbsp;&nbsp;Koko ruutu<br>
+    <kbd>?</kbd>&nbsp;&nbsp;Avaa / sulje apu<br><br>
+    <span style="opacity:0.5;">Sulje napsauttamalla</span>
+  </div>
+</div>
+
+<script>
+  /* ========== CANVAS SCALING ==========
+     The deck is a fixed 1600x900 canvas. We scale it via transform
+     so it always fits the viewport (letterboxed when needed).
+     This guarantees nothing overflows on any screen size. */
+  const deckEl = document.getElementById('deck');
+  const BASE_W = 1600;
+  const BASE_H = 900;
+  const MOBILE_BP = 900;
+  const isMobile = () => window.innerWidth <= MOBILE_BP;
+
+  function fitDeck() {
+    if (isMobile()) {
+      deckEl.style.transform = '';
+      return;
+    }
+    const sx = window.innerWidth / BASE_W;
+    const sy = window.innerHeight / BASE_H;
+    const s = Math.min(sx, sy);
+    deckEl.style.transform = `scale(${s})`;
+  }
+  window.addEventListener('resize', fitDeck);
+  fitDeck();
+
+  /* ========== SLIDE NAVIGATION ========== */
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const currentNumEl = document.getElementById('currentNum');
+  const totalNumEl = document.getElementById('totalNum');
+  const progressFill = document.getElementById('progressFill');
+  const sectionTags = document.querySelectorAll('#sectionTag span');
+  const helpOverlay = document.getElementById('helpOverlay');
+
+  totalNumEl.textContent = String(total).padStart(2, '0');
+
+  function show(i) {
+    if (i < 0) i = 0;
+    if (i >= total) i = total - 1;
+    slides[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+
+    currentNumEl.textContent = String(current + 1).padStart(2, '0');
+    progressFill.style.width = ((current + 1) / total * 100) + '%';
+
+    // Update section tag
+    const sec = slides[current].getAttribute('data-section');
+    sectionTags.forEach(tag => {
+      tag.classList.toggle('current', tag.getAttribute('data-section') === sec);
+    });
+
+    // Hide the section indicator on cover/structure slides
+    document.body.classList.toggle('on-cover', sec === 'cover');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      show(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      show(current - 1);
+    } else if (e.key === 'Home') {
+      show(0);
+    } else if (e.key === 'End') {
+      show(total - 1);
+    } else if (e.key === '?' || e.key === '/') {
+      helpOverlay.classList.toggle('active');
+    } else if (e.key === 'f' || e.key === 'F') {
+      e.preventDefault();
+      toggleFullscreen();
+    } else if (e.key === 'Escape') {
+      helpOverlay.classList.remove('active');
+    }
+  });
+
+  /* ========== FULLSCREEN TOGGLE ========== */
+  function toggleFullscreen() {
+    const el = document.documentElement;
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+    if (!isFs) {
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+
+  document.getElementById('fsBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleFullscreen();
+  });
+
+  // Touch swipe (mobile): horizontal swipe to navigate, vertical scroll preserved
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartT = 0;
+  const SWIPE_THRESHOLD = 60;
+  const SWIPE_MAX_TIME = 700;
+
+  deckEl.addEventListener('touchstart', (e) => {
+    const t = e.changedTouches[0];
+    touchStartX = t.screenX;
+    touchStartY = t.screenY;
+    touchStartT = Date.now();
+  }, { passive: true });
+
+  deckEl.addEventListener('touchend', (e) => {
+    if (!isMobile()) return;
+    const t = e.changedTouches[0];
+    const dx = t.screenX - touchStartX;
+    const dy = t.screenY - touchStartY;
+    const dt = Date.now() - touchStartT;
+    if (dt > SWIPE_MAX_TIME) return;
+    if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+    if (Math.abs(dx) <= Math.abs(dy)) return;
+    if (dx < 0) show(current + 1);
+    else show(current - 1);
+  }, { passive: true });
+
+  // Reset scroll to top whenever the active slide changes (mobile only)
+  const scrollResetObserver = new MutationObserver(() => {
+    if (isMobile()) window.scrollTo({ top: 0, behavior: 'instant' });
+  });
+  slides.forEach(s => scrollResetObserver.observe(s, { attributes: true, attributeFilter: ['class'] }));
+
+  helpOverlay.addEventListener('click', () => helpOverlay.classList.remove('active'));
+
+  // Initial state
+  show(0);
+
+  /* ========== VIEW TOGGLE (compare two views in the same frame) ========== */
+  document.querySelectorAll('.view-toggle').forEach(toggle => {
+    const buttons = toggle.querySelectorAll('.view-toggle-btn');
+    const frame = toggle.parentElement.querySelector('.view-toggle-frame');
+    if (!frame) return;
+    const images = frame.querySelectorAll('.view-image');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = btn.dataset.view;
+        buttons.forEach(b => {
+          const active = b.dataset.view === target;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        images.forEach(img => {
+          img.classList.toggle('is-active', img.dataset.view === target);
+        });
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

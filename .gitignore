@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Local backups (zips of older versions)
+backup/
+
+# Older versions of the deck (kept locally only)
+ref/cst-webinar_3.html
+ref/cst-webinar_4.html
