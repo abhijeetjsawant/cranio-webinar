@@ -1293,7 +1293,8 @@
       padding: 52px 20px 44px;
       display: none;
       flex-direction: column;
-      overflow: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .slide.active { display: flex; }
@@ -2704,16 +2705,19 @@
     else show(current - 1);
   }, { passive: true });
 
-  // Reset scroll to top whenever the active slide changes (mobile only)
-  const scrollResetObserver = new MutationObserver(() => {
-    if (isMobile()) window.scrollTo({ top: 0, behavior: 'instant' });
+  // Reset scroll to top of each slide when it becomes active
+  const scrollResetObserver = new MutationObserver((mutations) => {
+    mutations.forEach(m => {
+      if (m.target.classList.contains('active')) m.target.scrollTop = 0;
+    });
   });
   slides.forEach(s => scrollResetObserver.observe(s, { attributes: true, attributeFilter: ['class'] }));
 
   helpOverlay.addEventListener('click', () => helpOverlay.classList.remove('active'));
 
-  // Initial state
-  show(0);
+  // Initial state — honour ?s=N URL param for simulator testing
+  const urlSlide = parseInt(new URLSearchParams(location.search).get('s'));
+  show(Number.isFinite(urlSlide) && urlSlide >= 1 ? urlSlide - 1 : 0);
 
   /* ========== VIEW TOGGLE (compare two views in the same frame) ========== */
   document.querySelectorAll('.view-toggle').forEach(toggle => {
