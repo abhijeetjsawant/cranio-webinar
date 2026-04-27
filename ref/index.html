@@ -1358,14 +1358,15 @@
     }
     .cover-meta .label { font-size: 9px; margin-bottom: 4px; }
     .cover-meta .value { font-size: 13px; }
-    /* Image fills all remaining height */
+    /* Cover-right shrinks to fit the image — no empty dark band */
     .cover-right {
-      flex: 1 1 auto;
-      min-height: 0;
+      flex: 0 0 auto;
+      padding: 18px 0 22px;
     }
     .cover-image-frame {
-      width: 84%;
-      height: 84%;
+      width: 82%;
+      aspect-ratio: 1.25;
+      height: auto;
       padding: 10px;
     }
     .cover-decoration { display: none; }
