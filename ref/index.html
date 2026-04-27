@@ -1424,15 +1424,26 @@
 
     /* ========== CONCEPT LAYOUT ========== */
     .concept-layout {
-      grid-template-columns: 1fr;
-      gap: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       margin-top: 4px;
       flex: 1 1 auto;
       min-height: 0;
-      grid-auto-rows: min-content;
     }
-    .concept-layout .concept-text { align-self: start; }
-    .concept-layout .col-image { justify-content: flex-start; }
+    .concept-layout .concept-text { flex: 0 0 auto; }
+    .concept-layout .col-image {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .concept-layout .col-image .image-frame {
+      flex: 1 1 auto;
+      height: auto;
+      max-height: none;
+      min-height: 100px;
+    }
     .concept-text { max-width: 100%; }
     .concept-text .lead {
       font-size: clamp(16px, 4.6vw, 22px);
@@ -1445,12 +1456,13 @@
       margin-bottom: 10px;
     }
 
-    /* Stats */
+    /* Stats — override inline margin-top from desktop */
     .stat-row {
       gap: 18px;
       flex-wrap: wrap;
       margin: 14px 0 0;
     }
+    .stat-row[style] { margin-top: 14px !important; }
     .stat { padding-top: 10px; }
     .stat .num {
       font-size: clamp(34px, 10.5vw, 52px);
