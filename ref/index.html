@@ -2673,7 +2673,6 @@
   }, { passive: true });
 
   deckEl.addEventListener('touchend', (e) => {
-    if (!isMobile()) return;
     const t = e.changedTouches[0];
     const dx = t.screenX - touchStartX;
     const dy = t.screenY - touchStartY;
