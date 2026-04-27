@@ -1648,6 +1648,13 @@
 
     /* Help overlay */
     .help-content { font-size: 11.5px; line-height: 1.9; }
+
+    /* Slide 7 (Dura mater): inline p overrides are 19px — cap to 14px on mobile */
+    .two-col .col-content p[style] {
+      font-size: 14px !important;
+      line-height: 1.5 !important;
+    }
+    .two-col .col-content .pull-quote { display: none; }
   }
 
   /* ========== SHORT VIEWPORTS (landscape phones, small phones) ========== */
