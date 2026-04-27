@@ -965,37 +965,17 @@
   .sbs-layout .col-image {
     justify-content: center;
   }
-  .sbs-layout .sbs-list {
+  .sbs-layout .sbs-paragraph {
     align-self: center;
   }
 
-  .sbs-list {
-    list-style: none;
-    counter-reset: sbsItem;
-  }
-
-  .sbs-list li {
-    counter-increment: sbsItem;
-    border-top: 1px solid var(--line);
-    padding: 18px 0 18px 56px;
-    position: relative;
-    font-size: 17px;
-    line-height: 1.5;
+  .sbs-paragraph p {
+    font-size: 18px;
+    line-height: 1.7;
     color: var(--ink);
   }
-
-  .sbs-list li:last-child {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .sbs-list li::before {
-    content: counter(sbsItem, decimal-leading-zero);
-    position: absolute;
-    left: 0; top: 18px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--rust);
+  .sbs-paragraph p strong {
+    color: var(--ink);
   }
 
   /* ========== EXERCISE / QUOTE BLOCK ========== */
@@ -1621,13 +1601,11 @@
       min-height: 0;
       align-content: start;
     }
-    .sbs-list { align-self: start; }
-    .sbs-list li {
-      padding: 10px 0 10px 38px;
-      font-size: 13.5px;
-      line-height: 1.4;
+    .sbs-paragraph { align-self: start; }
+    .sbs-paragraph p {
+      font-size: 14px;
+      line-height: 1.55;
     }
-    .sbs-list li::before { top: 11px; font-size: 10px; }
 
     /* ========== EXERCISE CARD ========== */
     .exercise-card {
@@ -2203,15 +2181,9 @@
       <div class="image-caption">→ Sphenobasilar synchondrosis · liikkeen origo</div>
     </div>
 
-    <ol class="sbs-list">
-      <li>Kitaluun ja takaraivoluun välinen <strong>nivel kallonpohjassa</strong>.</li>
-      <li>Kraniosakraalisen liikkeen lähtöpiste — sieltä liike säteilee kaikkiin kallon luihin.</li>
-      <li>Liike kulkee duraaliputkea pitkin <strong>sakrumiin ja coccyxiin saakka</strong>.</li>
-      <li>SBS:n liikkuvuus on edellytys koko kraniosakraalisen järjestelmän vapaalle toiminnalle.</li>
-      <li>Kompressio tai vääristymä SBS:ssä heijastuu laajasti — hermosto, hormonitoiminta, autonominen säätely.</li>
-      <li>Mukautuu kaikkeen organisaatioon ja kaikkeen historiaan.</li>
-      <li><strong>SBS peilaa lantiota.</strong></li>
-    </ol>
+    <div class="sbs-paragraph">
+      <p>SBS on kitaluun ja takaraivoluun välinen <strong>nivel kallonpohjassa</strong>. Siitä liike kulkee sakrumiin saakka — aivo-selkäydinnesteen rauhallisen aaltoilun mukana.</p>
+    </div>
   </div>
 </section>
 
@@ -2233,12 +2205,12 @@
 
       <div class="meaning-block">
         <div class="meaning-label"><span class="num">i.</span>Emotionaalinen merkitys</div>
-        <p><strong>Kuuleminen ja kuulluksi tuleminen</strong> — mitä haluan kuulla, mitä kuulen. Kommunikaation haasteet, ilmaisun pidättäminen TMJ:n kautta. Huimaus voi heijastua emotionaaliseen epävarmuuteen.</p>
+        <p>Ilmaisun pidättäminen TMJ:n kautta. Huimaus voi heijastua emotionaaliseen epävarmuuteen.</p>
       </div>
 
       <div class="meaning-block">
         <div class="meaning-label"><span class="num">ii.</span>Symbolinen merkitys</div>
-        <p>Elämän tasapaino, joustavuus ja itseilmaisu.</p>
+        <p>Elämän tasapaino, joustavuus ja itseilmaisu. <strong>Kuuleminen ja kuulluksi tuleminen</strong> — mitä haluan kuulla, mitä kuulen. Kommunikaation haasteet.</p>
       </div>
 
       <div class="meaning-block">
