@@ -2733,7 +2733,8 @@
 <script>
   /* Wix iFrame: tell parent to match screen height */
   function notifyWixHeight() {
-    window.parent.postMessage(JSON.stringify({ height: window.screen.height }), '*');
+    var h = window.screen.availHeight || window.screen.height;
+    window.parent.postMessage(JSON.stringify({ height: h }), '*');
   }
   notifyWixHeight();
   window.addEventListener('resize', notifyWixHeight);
