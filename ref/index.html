@@ -2730,6 +2730,14 @@
     });
   });
 </script>
+<script>
+  /* Wix iFrame: tell parent to match screen height */
+  function notifyWixHeight() {
+    window.parent.postMessage(JSON.stringify({ height: window.screen.height }), '*');
+  }
+  notifyWixHeight();
+  window.addEventListener('resize', notifyWixHeight);
+</script>
 
 </body>
 </html>
